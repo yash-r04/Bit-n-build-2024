@@ -18,9 +18,12 @@ router.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         if (err) return next(err);
         if (!user) return res.status(400).json({ message: info.message });
+
         req.logIn(user, (err) => {
             if (err) return next(err);
-            return res.json({ message: 'Login successful' });
+
+            // Redirect to dashboard after successful login
+            return res.json({ message: 'Login successful', redirect: '/dashboard' });
         });
     })(req, res, next);
 });
@@ -31,7 +34,7 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 
 router.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/' }),
     (req, res) => {
-        res.redirect('/dashboard');
+        res.redirect('/dashboard'); // Redirect to dashboard on successful login
     }
 );
 

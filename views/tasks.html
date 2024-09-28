@@ -11,63 +11,149 @@
     <div id="taskForm">
         <input type="text" id="taskName" placeholder="Task Name" required />
         <input type="text" id="viewLink" placeholder="Google Drive Link (optional)" />
+        <select id="taskCategory">
+            <option value="General">General</option>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Other">Other</option>
+        </select>
         <button id="addTaskBtn">Add Task</button>
     </div>
 
     <h2>Todo List</h2>
-    <ul id="taskList"></ul>
+    <div id="taskCategories"></div> <!-- Updated to a div for better category handling -->
 
     <script>
         const addTaskBtn = document.getElementById('addTaskBtn');
-        const taskList = document.getElementById('taskList');
-
+        const taskCategories = document.getElementById('taskCategories');
+    
         // Fetch all tasks when the page loads
         window.onload = async function() {
             const response = await fetch('/tasks');
             const tasks = await response.json();
-            tasks.forEach(task => addTaskToDOM(task));
+            for (const category in tasks) {
+                addCategoryToDOM(category, tasks[category]);
+            }
         };
-
+    
         // Add a task
         addTaskBtn.addEventListener('click', async () => {
             const taskName = document.getElementById('taskName').value;
             const viewLink = document.getElementById('viewLink').value;
-
-            const response = await fetch('/task', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ taskName, viewLink })
+            const category = document.getElementById('taskCategory').value;
+    
+            try {
+                const response = await fetch('/task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskName, viewLink, category })
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to create task');
+                }
+    
+                const task = await response.json();
+                addTaskToDOM(category, task); // Add task to the appropriate category
+                clearInputs(); // Clear input fields after adding
+            } catch (error) {
+                console.error('Error while adding task:', error);
+            }
+        });
+    
+        // Add a category and its tasks to the DOM
+        function addCategoryToDOM(category, tasks) {
+            // Only add category if it has tasks
+            if (tasks.length === 0) {
+                return; // Do not show empty categories
+            }
+    
+            const categoryDiv = document.createElement('div');
+            const categoryHeader = document.createElement('h3');
+            categoryHeader.innerText = category;
+            categoryDiv.appendChild(categoryHeader);
+    
+            const taskList = document.createElement('ul');
+            tasks.forEach(task => addTaskToDOM(category, task, taskList));
+            categoryDiv.appendChild(taskList);
+            taskCategories.appendChild(categoryDiv);
+        }
+    
+        // Add task to DOM
+        function addTaskToDOM(category, task) {
+            let categoryDiv = Array.from(taskCategories.children).find(div => {
+                return div.querySelector('h3').innerText === category;
             });
-
-            const task = await response.json();
-            addTaskToDOM(task);
+    
+            // If the category div doesn't exist, create it
+            if (!categoryDiv) {
+                categoryDiv = document.createElement('div');
+                const categoryHeader = document.createElement('h3');
+                categoryHeader.innerText = category;
+                categoryDiv.appendChild(categoryHeader);
+                const taskList = document.createElement('ul');
+                categoryDiv.appendChild(taskList);
+                taskCategories.appendChild(categoryDiv);
+            }
+    
+            const taskList = categoryDiv.querySelector('ul');
+            const taskItem = document.createElement('li');
+            taskItem.id = task._id; // Set the ID to the task ID
+            taskItem.innerHTML = `
+                ${task.taskName} - Added on: ${new Date(task.createdAt).toLocaleDateString()}
+                <a href="${task.viewLink}" target="_blank">View</a>
+                <button onclick="deleteTask('${task._id}', '${category}')">Done</button>
+            `;
+            taskList.appendChild(taskItem);
+        }
+    
+        // Clear input fields
+        function clearInputs() {
+            document.getElementById('taskName').value = '';
+            document.getElementById('viewLink').value = '';
+            document.getElementById('taskCategory').value = 'General'; // Reset to default
+        }
+    
+        // Delete task
+       // Delete task
+async function deleteTask(taskId, category) {
+    try {
+        const response = await fetch(`/task/${taskId}`, {
+            method: 'DELETE'
         });
 
-        // Add task to DOM
-        function addTaskToDOM(task) {
-    const taskItem = document.createElement('li');
-    taskItem.id = task._id;  // Set the id of the <li> to the task's unique ID
+        if (response.ok) {
+            // Find the task element and remove it from the DOM
+            const taskElement = document.getElementById(taskId); // Ensure you use the correct ID
+            if (taskElement) {
+                taskElement.remove(); // Remove from DOM
 
-    taskItem.innerHTML = `
-        ${task.taskName} - Added on: ${new Date(task.createdAt).toLocaleDateString()}
-        <a href="${task.viewLink}" target="_blank">View</a>
-        <button onclick="deleteTask('${task._id}')">Done</button>
-    `;
-    taskList.appendChild(taskItem);
-}
+                // Check if the category is empty
+                const categoryDiv = Array.from(taskCategories.children).find(div => {
+                    return div.querySelector('h3').innerText === category;
+                });
 
-
-        // Delete task
-        async function deleteTask(taskId) {
-    await fetch(`/task/${taskId}`, { method: 'DELETE' });
-
-    // Find the task <li> by its id and remove it from the DOM
-    const taskElement = document.getElementById(taskId);
-    if (taskElement) {
-        taskElement.remove();
+                // If the categoryDiv exists, check if it has any tasks left
+                if (categoryDiv) {
+                    const taskList = categoryDiv.querySelector('ul');
+                    if (taskList.children.length === 0) {
+                        categoryDiv.remove(); // Remove category if it has no tasks left
+                    }
+                }
+            } else {
+                console.error('Task element not found in the DOM');
+            }
+        } else {
+            const data = await response.json();
+            alert(data.message || 'Error deleting task');
+        }
+    } catch (error) {
+        console.error('Error while deleting task:', error);
     }
 }
 
     </script>
+    
+    
 </body>
 </html>
