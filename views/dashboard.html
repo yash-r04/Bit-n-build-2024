@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Manager</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+    <h1>Your Items</h1>
+    
+    <div id="taskForm">
+        <input type="text" id="taskName" placeholder="Task Name" required />
+        <input type="text" id="viewLink" placeholder="Google Drive Link (optional)" />
+        <select id="taskCategory">
+            <option value="Cloth">Cloth</option>
+            <option value="Food Items">Food Items</option>
+            <option value="Books">Books</option>
+            <option value="Furnitures">Furnitures</option>
+            <option value="Others">Others</option>
+        </select>
+        <button id="addTaskBtn">Add Item</button>
+    </div>
+
+    <h2>Items List</h2>
+    <div id="taskCategories"></div> <!-- Updated to a div for better category handling -->
+
+    <button id="showAnalyticsBtn">Show Analytics</button>
+    <table id="analyticsTable" style="display:none;">
+        <thead>
+            <tr>
+                <th>Task Name</th>
+                <th>Date Added</th>
+                <th>Days Ago</th>
+            </tr>
+        </thead>
+        <tbody id="analyticsBody"></tbody>
+    </table>
+
+    <div id="myChart" style="width: 900px; height: 500px;"></div>
+
+    <script type="text/javascript">
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskCategories = document.getElementById('taskCategories');
+        const showAnalyticsBtn = document.getElementById('showAnalyticsBtn');
+        const analyticsBody = document.getElementById('analyticsBody');
+        const analyticsTable = document.getElementById('analyticsTable');
+
+        // Fetch all tasks when the page loads
+        window.onload = async function() {
+            await fetchAndDisplayTasks();
+            await drawPieChart();
+        };
+
+        // Function to fetch and display tasks
+        async function fetchAndDisplayTasks() {
+            const response = await fetch('/tasks');
+            const tasks = await response.json();
+            for (const category in tasks) {
+                addCategoryToDOM(category, tasks[category]);
+            }
+        }
+
+        // Function to draw the pie chart
+        async function drawPieChart() {
+            try {
+                const response = await fetch('/tasks');
+                const tasks = await response.json();
+                const categoryCounts = {};
+
+                for (const category in tasks) {
+                    categoryCounts[category] = tasks[category].length;
+                }
+
+                // Prepare data for the pie chart
+                const data = google.visualization.arrayToDataTable([
+                    ['Task Category', 'Number of Tasks'],
+                    ...Object.entries(categoryCounts)
+                ]);
+
+                // Set chart options
+                const options = {
+                    title: 'Number of Tasks by Category',
+                    pieSliceText: 'label',
+                    legend: { position: 'right' },
+                    is3D: true
+                };
+
+                // Draw the chart
+                const chart = new google.visualization.PieChart(document.getElementById('myChart'));
+                chart.draw(data, options);
+            } catch (error) {
+                console.error('Error fetching data for pie chart:', error);
+            }
+        }
+
+        // Add a task
+        addTaskBtn.addEventListener('click', async () => {
+            const taskName = document.getElementById('taskName').value;
+            const viewLink = document.getElementById('viewLink').value;
+            const category = document.getElementById('taskCategory').value;
+
+            try {
+                const response = await fetch('/task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskName, viewLink, category })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create task');
+                }
+
+                const task = await response.json();
+                addTaskToDOM(category, task); // Add task to the appropriate category
+                clearInputs(); // Clear input fields after adding
+                await drawPieChart(); // Refresh pie chart
+            } catch (error) {
+                console.error('Error while adding task:', error);
+            }
+        });
+
+        // Add a category and its tasks to the DOM
+        function addCategoryToDOM(category, tasks) {
+            // Only add category if it has tasks
+            if (tasks.length === 0) {
+                return; // Do not show empty categories
+            }
+
+            const categoryDiv = document.createElement('div');
+            const categoryHeader = document.createElement('h3');
+            categoryHeader.innerText = category;
+            categoryDiv.appendChild(categoryHeader);
+
+            const taskList = document.createElement('ul');
+            tasks.forEach(task => addTaskToDOM(category, task, taskList));
+            categoryDiv.appendChild(taskList);
+            taskCategories.appendChild(categoryDiv);
+        }
+
+        // Add task to DOM
+        function addTaskToDOM(category, task) {
+            let categoryDiv = Array.from(taskCategories.children).find(div => {
+                return div.querySelector('h3').innerText === category;
+            });
+
+            // If the category div doesn't exist, create it
+            if (!categoryDiv) {
+                categoryDiv = document.createElement('div');
+                const categoryHeader = document.createElement('h3');
+                categoryHeader.innerText = category;
+                categoryDiv.appendChild(categoryHeader);
+                const taskList = document.createElement('ul');
+                categoryDiv.appendChild(taskList);
+                taskCategories.appendChild(categoryDiv);
+            }
+
+            const taskList = categoryDiv.querySelector('ul');
+            const taskItem = document.createElement('li');
+            taskItem.id = task._id; // Set the ID to the task ID
+            taskItem.innerHTML = `
+                ${task.taskName} - Added on: ${new Date(task.createdAt).toLocaleDateString()}
+                <a href="${task.viewLink}" target="_blank">View</a>
+                <button onclick="deleteTask('${task._id}', '${category}')">Done</button>
+            `;
+            taskList.appendChild(taskItem);
+        }
+
+        // Clear input fields
+        function clearInputs() {
+            document.getElementById('taskName').value = '';
+            document.getElementById('viewLink').value = '';
+            document.getElementById('taskCategory').value = 'General'; // Reset to default
+        }
+
+        // Delete task
+        async function deleteTask(taskId, category) {
+            try {
+                const response = await fetch(`/task/${taskId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    // Find the task element and remove it from the DOM
+                    const taskElement = document.getElementById(taskId); // Ensure you use the correct ID
+                    if (taskElement) {
+                        taskElement.remove(); // Remove from DOM
+
+                        // Check if the category is empty
+                        const categoryDiv = Array.from(taskCategories.children).find(div => {
+                            return div.querySelector('h3').innerText === category;
+                        });
+
+                        // If the categoryDiv exists, check if it has any tasks left
+                        if (categoryDiv) {
+                            const taskList = categoryDiv.querySelector('ul');
+                            if (taskList.children.length === 0) {
+                                categoryDiv.remove(); // Remove category if it has no tasks left
+                            }
+                        }
+                    } else {
+                        console.error('Task element not found in the DOM');
+                    }
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Error deleting task');
+                }
+            } catch (error) {
+                console.error('Error while deleting task:', error);
+            }
+        }
+
+        // Show Analytics
+        showAnalyticsBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/tasks');
+                const tasks = await response.json();
+
+                const taskEntries = [];
+
+                // Loop through each category to gather task data
+                for (const category in tasks) {
+                    tasks[category].forEach(task => {
+                        const addedDate = new Date(task.createdAt);
+                        const daysAgo = Math.floor((new Date() - addedDate) / (1000 * 60 * 60 * 24));
+                        taskEntries.push({
+                            taskName: task.taskName,
+                            addedDate: addedDate.toLocaleDateString(),
+                            daysAgo
+                        });
+                    });
+                }
+
+                // Sort tasks by date added (oldest to newest)
+                taskEntries.sort((a, b) => new Date(a.addedDate) - new Date(b.addedDate));
+
+                // Clear previous entries in the table body
+                analyticsBody.innerHTML = '';
+
+                // Populate the table with the data
+                taskEntries.forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${entry.taskName}</td>
+                        <td>${entry.addedDate}</td>
+                        <td>${entry.daysAgo}</td>
+                    `;
+                    analyticsBody.appendChild(row);
+                });
+
+                // Show the table
+                analyticsTable.style.display = 'table';
+            } catch (error) {
+                console.error('Error fetching tasks for analytics:', error);
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+        google.charts.load('current', { packages: ['corechart'] }); google.charts.setOnLoadCallback(drawPieChart); </script>
+
+</body> </html> 
