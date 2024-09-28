@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+
+body{
+  margin:0 ;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding:0;
+  font-family: "Orbitron", sans-serif;
+}
+
+h1{
+  font-family: "Orbitron", sans-serif;
+  color:  #e8d6b3;
+  font-size: 60px;  
+  font-weight: bold;
+  margin: 15px;
+  text-align: center;
+  padding: 30px;
+}
+
+
+.head{
+  font-family: "Orbitron", sans-serif;
+  color:  #e8d6b3;
+  font-size: 25px;  
+  font-weight: bold;
+  margin: 5px;
+  text-align: center;
+}
+
+.donation-page {
+  width: 600px;
+  margin: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.donationheading {
+  text-align: center;
+  color: #333;
+}
+
+.select-item-button,
+.donate-button,
+.submit-button {
+  background-color: #d4a952; 
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+.select-item-button:hover,
+.donate-button:hover,
+.submit-button:hover {
+  background-color: #d4a952; 
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.form-group select,
+.form-group input {
+  width: 91%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.item-list {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.itemsadded {
+  margin: 0;
+}
+
+.contact-info {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.contact-info h3 {
+  margin: 0 0 10px;
+}
+
+.contact-info .form-group {
+  margin-bottom: 15px;
+}
+
+.contact-info input {
+  width: calc(100% - 22px); 
+}
+
+@media (max-width: 600px) {
+  .donation-page {
+    padding: 15px;
+  }
+}
+

@@ -1,0 +1,243 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+body{
+  margin:0 ;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding:0;
+  font-family: "Orbitron", sans-serif;
+}
+.header {
+  margin: 0px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-family: "Orbitron", sans-serif;
+  color:  #e8d6b3;
+  font-size: 60px;  
+  font-weight: bold;
+  margin: 5px;
+}
+
+li{
+  font-family: "Orbitron", sans-serif;
+  font-weight: bold;
+  list-style-type: none;
+  color:#e8d6b3;
+  font-size: 20px;
+  margin:0;
+  padding:0;
+}
+
+a{
+  text-decoration: none;
+  color:#e8d6b3;
+}
+.welcome-message, .login-prompt{
+  padding: 25px;
+  font-weight: 100;
+  color:#e8d6b3;
+  font-family: "Orbitron", sans-serif;
+  font-size:40px;
+  height: 10vh;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30vh;
+  width: 95vw;
+  background: linear-gradient(to right, black, rgba(0, 0, 0, 0.942));
+  margin:15px;
+  border-radius: 30px;
+}
+button {
+  padding: 15px 30px; 
+  font-size: 25px; 
+  color: white;
+  border: none;
+  border-radius: 8px; 
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  width: 400px;
+  height: 100px;
+  justify-content: space-between;
+  margin:20px;
+  font-family: "Orbitron", "sans-serif";
+}
+
+.upload {
+  background: linear-gradient(to right,#edb33f9f,#c8a051 );
+  
+}
+
+.donate {
+  background: linear-gradient(to right,#edb33f9f,#c8a051 );
+}
+
+.myCloset {
+  background: linear-gradient(to right,#edb33f9f,#c8a051 );
+}
+
+button:hover {
+  opacity: 0.9;
+}
+.card{
+  border: 1px solid grey;
+  border-radius: 20px;
+  box-shadow: 5px 5px 5px black;
+  padding:10px;
+  margin-top: 5px;
+  margin-left: 25px;
+  text-align: center;
+  width: 300px;
+  display: inline-block;
+  margin-bottom: 50px;
+}
+.card .card-image{
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+  width: 100%;
+  z-index:-1;
+}
+.card .card-title{
+  font-family: "Orbitron", sans-serif;
+  margin: 0;
+  color: #e8d6b3;
+}
+.card .card-text{
+  font-family: "Orbitron", sans-serif;
+  color: #e8d6b3;
+}
+.color-picker-conatainer{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 50px;
+  width: 300px;
+  padding: 10px;
+  border-color:#c8a051;
+}
+h1{
+  margin: 50px;
+  font-size: 3rem;
+}
+.color-display{
+  width: 383px;
+  height: 112px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 5px solid #e8d6b3;
+  border-radius: 25px;
+  margin-bottom: 25px;
+  transition: 0.25s ease;
+  margin-top: 0px;
+  margin-left: 25px;
+}
+.color-display p{
+  color: hsl(0, 0%, 0%);
+  font-size: 2rem;
+  text-align: center;
+}
+label{
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color:#e8d6b3;
+  margin-left: 25px;
+}
+input[type="color"]{
+  width: 75px;
+  height: 50px;
+  padding: 5px;
+  border-radius: 10px;
+  border: 3px solid hsl(0, 0%, 4%);
+  margin-left: 25px;
+}
+.card1{
+  border: 1px solid grey;
+  border-radius: 20px;
+  box-shadow: 5px 5px 5px black;
+  padding:10px;
+  margin-top: 5px;
+  margin-left: 25px;
+  text-align: center;
+  width: 446px;
+  height:225px;
+  display: inline-block;
+}
+.Analytics{
+  display: flex;
+}
+.Plan{
+  background: linear-gradient(to right,#edb33f9f,#c8a051 );
+  width:475px;
+  margin-left:25px;
+}
+  
+h2{
+  color:#e8d6b3;
+}
+.card3{
+  border: 1px solid grey;
+  border-radius: 20px;
+  box-shadow: 5px 5px 5px black;
+  padding:10px;
+  margin-top: 5px;
+  margin-left: 25px;
+  text-align: center;
+  width: 500px;
+  display: inline-block;
+  margin-bottom: 50px;
+}
+.footer {
+
+  color: #e8d6b3;
+  padding: 20px 0;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.footer-section {
+  flex: 1;
+  padding: 10px;
+}
+
+.footer-section h4 {
+  margin-bottom: 10px;
+}
+
+.social-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.social-link {
+  color: #e8d6b3;
+  text-decoration: none;
+  margin-bottom: 5px;
+}
+
+.social-link:hover {
+  text-decoration: underline;
+  color:#c8a051;
+}
+hr{
+  color:#e8d6b3;
+}
