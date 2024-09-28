@@ -1,4 +1,12 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+npx create-next-app@latest outfit-planner
+cd outfit-planner
+npm install date-fns @radix-ui/react-dialog @radix-ui/react-checkbox
+npx shadcn@latest init
+npm install date-fns@^3.0.0
+npx shadcn@latest add calendar button dialog label checkbox --overwrite
+
+
+his is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
 
