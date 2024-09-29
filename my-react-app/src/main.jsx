@@ -8,7 +8,7 @@ import MainSignUp from './assets/SignUpPage/SignUp.jsx';
 import MainNewClothes from './assets/NewClothes/MainNewClothes.jsx';
 import MainDonatePage from './assets/DonatePage/MainDonatePage.jsx';
 import MainCloset from './assets/ClosetPage/MainCloset.jsx';
-import { MainPlanOutfit } from './assets/PlanOutfitPage/MainPlanOutfit.jsx';
+import MainPlanOutfit from './assets/PlanOutfitPage/MainPlanOutfit.jsx';
 
 
 import {
@@ -51,6 +51,7 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+   
     <RouterProvider router={router} />
   </StrictMode>,
 )
